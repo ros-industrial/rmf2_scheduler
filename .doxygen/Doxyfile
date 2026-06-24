@@ -23,7 +23,7 @@ PROJECT_BRIEF          =
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = ../docs/doxygen/build
+OUTPUT_DIRECTORY       = ../docs/api
 EXTRACT_ALL            = YES
 EXTRACT_PRIVATE        = NO
 EXTRACT_PACKAGE        = NO
