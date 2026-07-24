@@ -14,69 +14,27 @@ Manages task schedules for RMF and RMF2.
 * ROS 2 Humble
 * ROS 2 Jazzy
 
-
 ## Documentation
 
-See the [documentation](https://rmf-scheduler.readthedocs.io/en/latest) on how to use it
+See the [documentation](./docs/introduction.md) for more information.
 
-## Quick Setup
+## Build From Source
 
-Create a colcon workspace.
+See the [Build From Source](./docs/build_from_source.md).
 
-```bash
-export COLCON_WS=~/colcon_ws
-mkdir -p $COLCON_WS/src
-cd $COLCON_WS
-```
+## Quick Start
 
-Download the source code.
+- [Python API Server Demo (Native Run)](./docs/quick_start.md/#native)
+- [Docker](./docs/quick_start.md/#docker)
 
-```bash
-cd src
-git clone https://github.com/ros-industrial/rmf_scheduler.git
-```
+## Data Structures
 
-Install dependencies.
-
-```bash
-source /opt/ros/humble/setup.bash
-rosdep install --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
-```
-
-Build.
-```bash
-cd ..
-colcon build
-```
-
-### Quick Demo
-
-- [Python API Server Demo](./rmf2_scheduler_server_py)
-
-## Docker
-
-### Docker Build
-After cloning the repository, run the following commands in the same directory:
-``` bash
-cd ./rmf2_scheduler
-docker build . -t rmf2_scheduler:local
-```
-
-### Docker Run
-After the image is built, you can run and access the container using:
-``` bash
-docker run -it --net=host rmf2_scheduler:local bash
-```
-
-After which you can run the modules from the packages, for example `rmf2_scheduler_server_py`.
-``` bash
-rmf2_scheduler_server_py
-```
-The server should be accessible on your local device on `localhost:8000` as the command was ran with `--net=host`. You can open a browser and navigate to `http://localhost:8000/docs` to see if the swagger webpage is accessible.
+[Data Structures](./docs/data_structures.md)
 
 ## Support
 
-This repository is developed by ROS Industrial Consortium Asia Pacific
+This repository is developed by ROS Industrial Consortium Asia Pacific.
 
 ## Contributing
+
 Guidelines on contributing to this repo can be found [here](CONTRIBUTING.md).
