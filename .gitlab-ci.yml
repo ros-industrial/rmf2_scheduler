@@ -42,11 +42,11 @@ doxygen-docs:
     - apt-get -y -qq install doxygen graphviz
 
   script:
-    - (mkdir -p docs/doxygen/build && cd ./.doxygen && doxygen)
+    - doxygen
 
   artifacts:
     paths:
-      - docs/doxygen/build/html/
+      - docs/api/html/
     expire_in: 1 day
 
 # Build Sphinx Documentation

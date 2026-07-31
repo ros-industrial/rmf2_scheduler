@@ -35,14 +35,11 @@ Generate API documentation
 
 ```bash
 cd $COLCON_WS/src/rmf_scheduler/
-mdkir -p docs/doxygen/build
-cd .doxygen
 doxygen
 ```
 
 Open the documentation with your favourite web browser
 
 ```
-cd ..
-firefox docs/doxygen/build/html/index.html
+firefox docs/api/html/index.html
 ```
