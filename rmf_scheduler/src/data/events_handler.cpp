@@ -44,14 +44,17 @@ std::vector<Event> EventsHandler::lookup_events(
   uint64_t start_time,
   uint64_t end_time) const
 {
-  StartTimeLookup::const_iterator itr, itr_low, itr_up;
-  itr_low = start_time_lookup_.lower_bound(start_time);
-  itr_up = start_time_lookup_.upper_bound(end_time);
-
   std::vector<Event> looked_up_events;
-  for (itr = itr_low; itr != itr_up; itr++) {
-    looked_up_events.push_back(event_list_.at(itr->second));
-  }
+  for (const auto& [id, event] : event_list_)
+  {
+    uint64_t event_start = event.start_time;
+    uint64_t event_end = event.start_time + event.duration;
+    // capture long spanning events that started before start_time
+    if (event_start < end_time && event_end > start_time)
+    {
+      looked_up_events.push_back(event);
+    }
+  } 
   return looked_up_events;
 }
 
