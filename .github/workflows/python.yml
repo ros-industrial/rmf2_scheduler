@@ -95,7 +95,7 @@ jobs:
 
       - name: Check stale stubs
         run: |
-          uv run scripts/generate_stubs.py rmf2_scheduler._core -o python
+          uv run scripts/generate_stubs.py rmf2_scheduler -o python
           if git diff --quiet python/rmf2_scheduler; then
             echo "Stubs are up-to-date!"
             exit 0
