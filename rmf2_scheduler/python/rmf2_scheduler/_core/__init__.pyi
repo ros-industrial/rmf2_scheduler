@@ -165,5 +165,9 @@ class TaskExecutorManager:
     def update(self, arg0: str, arg1: data.Duration) -> None:
         ...
 class TaskflowProcessExecutor(ProcessExecutor):
-    def __init__(self, tem: TaskExecutorManager, concurrency: int = 32) -> None:
-        ...
+    def __init__(self, tem: TaskExecutorManager, concurrency: int | None = None) -> None:
+        """
+            :param tem: Task executor manager.
+            :param concurrency: Maximum number of concurrent threads.
+              Defaults to None, which uses std::thread::hardware_concurrency().
+        """

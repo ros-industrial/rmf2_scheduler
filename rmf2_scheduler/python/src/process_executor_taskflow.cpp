@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <optional>
+
 #include <pybind11/stl.h>
 
 #include "rmf2_scheduler_py/process_executor_taskflow.hpp"
@@ -29,12 +31,19 @@ void init_process_executor_taskflow_py(py::module & m)
     "TaskflowProcessExecutor"
   )
   .def(
-    py::init<
-      TaskExecutorManager::Ptr,
-      unsigned int
-    >(),
+    py::init(
+      [](TaskExecutorManager::Ptr tem, std::optional<unsigned int> concurrency) {
+        unsigned int c = concurrency.value_or(std::thread::hardware_concurrency());
+        return std::make_shared<TaskflowProcessExecutor>(tem, c);
+      }
+    ),
     py::arg("tem"),
-    py::arg("concurrency") = std::thread::hardware_concurrency()
+    py::arg("concurrency") = py::none(),
+    R"(
+    :param tem: Task executor manager.
+    :param concurrency: Maximum number of concurrent threads.
+      Defaults to None, which uses std::thread::hardware_concurrency().
+    )"
   )
   ;
 }
