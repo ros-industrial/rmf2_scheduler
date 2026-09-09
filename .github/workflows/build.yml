@@ -11,6 +11,7 @@ on:
 jobs:
   industrial_ci:
     strategy:
+      fail-fast: false
       matrix:
         env:
           # GCC Coverage Build
