@@ -1,0 +1,74 @@
+[build-system]
+requires = ["scikit-build-core>=0.11", "pybind11<3.0"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "rmf2_scheduler"
+version = "0.1.0"
+license = "Apache-2.0"
+description = "Python bindings for the RMF2 Scheduler"
+authors = [
+  { name = "Chen Bainian", email = "chen_bainian@a-star.edu.sg" },
+]
+requires-python = ">=3.10"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+
+
+[dependency-groups]
+test = [
+    "pytest>=8.0.2",
+]
+lint = [
+    "ruff>=0.9",
+]
+dev = [
+    { include-group = "test" },
+    "auditwheel>=6.8.2",
+    "patchelf>=0.19.1.0",
+    "pybind11-stubgen>=2.5.5",
+]
+
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+build-dir = "build/{wheel_tag}"
+wheel.install-dir = "rmf2_scheduler"
+
+[tool.scikit-build.cmake.define]
+BUILD_TESTING = "OFF"
+BUILD_PYTHON = "ON"
+BUILD_EXAMPLES = "OFF"
+
+[tool.scikit-build.wheel.packages]
+rmf2_scheduler = "python/rmf2_scheduler"
+
+[tool.uv]
+cache-keys = [
+  { file = "include/**/*.{h,c,hpp,cpp}" },
+  { file = "src/**/*.{h,c,hpp,cpp}" },
+  { file = "python/**/*.{h,c,hpp,cpp,txt}" },
+  { file = "CMakeLists.txt" },
+]
+
+[tool.ruff]
+extend-exclude = ["*.pyi"]
+
+[tool.cibuildwheel]
+build-frontend = "build[uv]"
+test-command = "pytest {project}/python/tests"
+test-groups = ["test"]
+before-build = [
+  "bash ./scripts/install-native-deps.sh",
+]
+
+[tool.cibuildwheel.linux]
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
+musllinux-x86_64-image = "musllinux_1_2"
+musllinux-aarch64-image = "musllinux_1_2"

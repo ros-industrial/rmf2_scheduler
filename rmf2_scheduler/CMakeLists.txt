@@ -1,25 +1,19 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.8)
 
-project(rmf2_scheduler)
-
-find_package(ament_cmake REQUIRED)
-find_package(Boost REQUIRED)
-find_package(nlohmann_json REQUIRED)
-find_package(croncpp_vendor REQUIRED)
-find_package(taskflow_vendor REQUIRED)
-find_package(tinyxml2_vendor REQUIRED)
+project(rmf2_scheduler VERSION 0.1.0)
 
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
 endif()
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+find_package(Boost REQUIRED)
+find_package(nlohmann_json REQUIRED)
 include(GNUInstallDirs)
-include_directories(
-  include
-)
+include(cmake/fetch_deps.cmake)
 
 add_library(${PROJECT_NAME}
   SHARED
@@ -63,113 +57,100 @@ add_library(${PROJECT_NAME}
   src/utils/dag_helper.cpp
   src/utils/data_encoding.cpp
   src/utils/string_utils.cpp
-  src/utils/tree_converter.cpp
   src/utils/url_utils.cpp
 )
 
-ament_target_dependencies(${PROJECT_NAME}
-  taskflow_vendor
-  croncpp_vendor
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 target_link_libraries(${PROJECT_NAME}
-  nlohmann_json::nlohmann_json
-  curl
-  # nlohmann_json_schema_validator
-  # ortools::ortools
-  tinyxml2
+  PUBLIC
+    Taskflow::Taskflow
+    nlohmann_json::nlohmann_json
+  PRIVATE
+    croncpp::croncpp
+    curl
 )
+
 target_compile_definitions(${PROJECT_NAME}
   PUBLIC
-  BOOST_DLL_USE_STD_FS
+    BOOST_DLL_USE_STD_FS
 )
 
-add_executable(dag_to_bt
-  examples/dag_to_bt.cpp
-)
+option(BUILD_EXAMPLES "Build example executables" ON)
+option(BUILD_PYTHON "Build Python bindings" ON)
 
-target_link_libraries(dag_to_bt
-  ${PROJECT_NAME}
-)
+if(BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif()
 
-add_executable(rs_http_request
-  examples/rs_http_request.cpp
-)
-
-target_link_libraries(rs_http_request
-  ${PROJECT_NAME}
-)
-
-add_executable(ld_broker_crud
-  examples/ld_broker_crud.cpp
-)
-
-target_link_libraries(ld_broker_crud
-  ${PROJECT_NAME}
-)
-
-add_executable(create_sample_backups
-  examples/create_sample_backups.cpp
-)
-
-target_link_libraries(create_sample_backups
-  ${PROJECT_NAME}
-)
-
-add_executable(clear_ld_broker
-  examples/clear_ld_broker.cpp
-)
-
-target_link_libraries(clear_ld_broker
-  ${PROJECT_NAME}
-)
-
-add_executable(run_scheduler
-  examples/run_scheduler.cpp
-)
-
-target_link_libraries(run_scheduler
-  ${PROJECT_NAME}
-)
-
-# rmf_api_generate_schema_headers(
-#   PACKAGE rmf_scheduler
-#   SCHEMAS_DIR schemas
-# )
+if(BUILD_PYTHON)
+  add_subdirectory(python)
+endif()
 
 if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
+  find_package(ament_cmake QUIET)
+  if(ament_cmake_FOUND)
+    find_package(ament_lint_auto REQUIRED)
+    ament_lint_auto_find_test_dependencies()
+  endif()
 
   add_subdirectory(test)
 endif()
 
 install(TARGETS
   ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
   LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
-install(TARGETS
-  dag_to_bt
-  rs_http_request
-  ld_broker_crud
-  clear_ld_broker
-  run_scheduler
-  create_sample_backups
-  DESTINATION lib/${PROJECT_NAME}
-)
 
 install(
   DIRECTORY include/
-  DESTINATION include
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-ament_export_include_directories(
-  include
+install(EXPORT export_${PROJECT_NAME}
+  NAMESPACE ${PROJECT_NAME}::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  FILE ${PROJECT_NAME}Targets.cmake
 )
 
-ament_export_libraries(
-  ${PROJECT_NAME}
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+  cmake/${PROJECT_NAME}Config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMinorVersion
 )
 
-ament_package()
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+
+# Ament index and prefix-path hook for colcon/ROS 2 compatibility
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/share/ament_index/resource_index/packages/${PROJECT_NAME} "")
+install(
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/share/ament_index/resource_index/packages/${PROJECT_NAME}
+  DESTINATION share/ament_index/resource_index/packages
+)
+
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/share/${PROJECT_NAME}/hook/ament_prefix_path.dsv
+  "prepend-non-duplicate;AMENT_PREFIX_PATH;")
+install(
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/share/${PROJECT_NAME}/hook/ament_prefix_path.dsv
+  DESTINATION share/${PROJECT_NAME}/hook
+)

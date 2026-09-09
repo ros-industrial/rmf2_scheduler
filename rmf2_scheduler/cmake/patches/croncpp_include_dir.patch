@@ -1,0 +1,4 @@
+diff --git a/include/croncpp.h b/include/croncpp/croncpp.h
+similarity index 100%
+rename from include/croncpp.h
+rename to include/croncpp/croncpp.h

@@ -1,0 +1,13 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# Ensure dependencies fetched by CPM and co-installed under this prefix are findable
+list(PREPEND CMAKE_PREFIX_PATH "${PACKAGE_PREFIX_DIR}")
+
+find_dependency(nlohmann_json)
+find_dependency(Taskflow)
+
+include("${CMAKE_CURRENT_LIST_DIR}/rmf2_schedulerTargets.cmake")
+
+check_required_components(rmf2_scheduler)
