@@ -1,0 +1,144 @@
+name: Build and test Python
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+
+defaults:
+  run:
+    working-directory: rmf2_scheduler
+
+jobs:
+  lint:
+    name: Ruff Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: "Install UV"
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+
+      - name: Run ruff format check
+        run: uvx ruff format --check .
+
+      - name: Run ruff lint
+        run: uvx ruff check .
+
+  test:
+    name: UV Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12"]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install C++ dependencies
+        run: |
+          sudo apt-get update -qq -y
+          sudo apt-get install -qq -y \
+            cmake \
+            libcurl4-openssl-dev \
+            libboost-dev \
+            nlohmann-json3-dev \
+            libpybind11-dev \
+            pybind11-json-dev
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Install UV"
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+
+      - name: Install package and test dependencies
+        run: uv sync --group dev
+
+      - name: Run tests
+        run: uv run pytest
+
+  stub-test:
+    name: Check Stale Stubs
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12"]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install C++ dependencies
+        run: |
+          sudo apt-get update -qq -y
+          sudo apt-get install -qq -y \
+            cmake \
+            libcurl4-openssl-dev \
+            libboost-dev \
+            nlohmann-json3-dev \
+            libpybind11-dev \
+            pybind11-json-dev
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Install UV"
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+
+      - name: Install package and test dependencies
+        run: uv sync --group dev
+
+      - name: Check stale stubs
+        run: |
+          uv run scripts/generate_stubs.py rmf2_scheduler._core -o python
+          if git diff --quiet python/rmf2_scheduler; then
+            echo "Stubs are up-to-date!"
+            exit 0
+          fi
+          echo "Stubs are stale!!"
+          exit 1
+
+  wheels:
+    name: Build wheels ${{ matrix.python }}-${{ matrix.buildplat[1] }}
+    needs: [lint, test, stub-test]
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["cp310", "cp312"]
+        buildplat:
+          - [ubuntu-latest, manylinux_x86_64]
+          - [ubuntu-24.04-arm, manylinux_aarch64]
+          - [macos-15-intel, macosx_x86_64]
+          - [macos-15, macosx_arm64]
+    runs-on: ${{ matrix.buildplat[0] }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: "Install UV"
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+
+      - name: Setup macOS
+        if: startsWith(matrix.buildplat[1], 'macosx_')
+        run: |
+          CIBW="MACOSX_DEPLOYMENT_TARGET=15.0"
+          echo "CIBW_ENVIRONMENT_MACOS=$CIBW" >> "$GITHUB_ENV"
+
+      - name: Build wheels
+        run: >
+          uvx cibuildwheel
+          --only "${{ matrix.python }}-${{ matrix.buildplat[1] }}"
+          --output-dir ../wheelhouse
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: wheels-${{ matrix.python }}-${{ matrix.buildplat[1] }}
+          path: wheelhouse/*.whl
