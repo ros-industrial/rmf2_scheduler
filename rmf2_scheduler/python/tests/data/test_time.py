@@ -12,15 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 from rmf2_scheduler.data import Time
 
 
-def _to_naive_time(
-   aware_time: datetime
-):
-    return datetime.fromtimestamp(aware_time.timestamp())
+def _to_naive_time(aware_time: datetime):
+    return datetime.fromtimestamp(aware_time.timestamp(), tz=aware_time.tzinfo)
 
 
 def test_empty_init():
@@ -43,7 +41,7 @@ def test_init():
 
 def test_init_datetime():
     # Seconds and nanoseconds
-    t_datetime = datetime(year=2024, month=6, day=3, hour=23, minute=2, second=30)
+    t_datetime = datetime(year=2024, month=6, day=3, hour=23, minute=2, second=30, tzinfo=timezone.utc)
     t = Time(t_datetime)
     assert t.seconds() == t_datetime.timestamp()
 
@@ -51,24 +49,22 @@ def test_init_datetime():
 def test_localtime():
     # Seconds and nanoseconds
     t_datetime = datetime(
-        year=2024, month=6, day=3, hour=23, minute=2, second=30,
-        tzinfo=timezone.utc
+        year=2024, month=6, day=3, hour=23, minute=2, second=30, tzinfo=timezone.utc
     )
 
     t_datetime = _to_naive_time(t_datetime)
 
     t = Time(t_datetime)
-    assert t.to_localtime() == 'Jun 03 23:02:30 2024'
+    assert t.to_localtime() == "Jun 03 23:02:30 2024"
 
 
 def test_isotime():
     # Seconds and nanoseconds
     t_datetime = datetime(
-        year=2024, month=6, day=3, hour=23, minute=2, second=30,
-        tzinfo=timezone.utc
+        year=2024, month=6, day=3, hour=23, minute=2, second=30, tzinfo=timezone.utc
     )
 
     t_datetime = _to_naive_time(t_datetime)
 
     t = Time(t_datetime)
-    assert t.to_ISOtime() == '2024-06-03T23:02:30Z'
+    assert t.to_ISOtime() == "2024-06-03T23:02:30Z"

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
+from datetime import datetime, timezone
 from threading import Thread
 from time import sleep
 
@@ -21,7 +21,7 @@ from rmf2_scheduler.data import Duration, Time
 
 
 def dummy_action():
-    print('action done at %s' % Time(datetime.now()).to_ISOtime())
+    print(f"action done at {Time(datetime.now(tz=timezone.utc)).to_ISOtime()}")
 
 
 def test_system_time_executor():
@@ -33,14 +33,14 @@ def test_system_time_executor():
 
     # Create an action
     action = SystemTimeAction()
-    action.time = Time(datetime.now()) + Duration.from_seconds(2)
+    action.time = Time(datetime.now(tz=timezone.utc)) + Duration.from_seconds(2)
     action.work = dummy_action
-    print('action scheduled at %s' % action.time.to_ISOtime())
+    print(f"action scheduled at {action.time.to_ISOtime()}")
 
     ste.add_action(action)
 
     # sleep 3 seconds
-    print('Running...')
+    print("Running...")
     sleep(3)
 
     ste.stop()

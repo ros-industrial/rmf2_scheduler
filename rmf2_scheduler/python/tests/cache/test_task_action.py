@@ -13,16 +13,16 @@
 # limitations under the License.
 
 from rmf2_scheduler.cache import ActionPayload, ScheduleCache, TaskAction
-from rmf2_scheduler.data import action_type, Task, Time
+from rmf2_scheduler.data import Task, Time, action_type
 
 
 def test_empty_init():
     action = TaskAction(action_type.TASK_ADD, ActionPayload())
     cache = ScheduleCache()
-    result, error = action.validate(cache)
+    result, _error = action.validate(cache)
 
     assert not result
-    print(error)
+    print(_error)
 
 
 def test_success():
@@ -30,15 +30,15 @@ def test_success():
         action_type.TASK_ADD,
         ActionPayload().task(
             Task(
-                id='4321e2c1-71f7-42ef-a10d-9a3b3f4241ff',
-                type='go_to_place',
-                start_time=Time.from_ISOtime('2024-06-03T23:02:30Z'),
-                status='ongoing',
+                id="4321e2c1-71f7-42ef-a10d-9a3b3f4241ff",
+                type="go_to_place",
+                start_time=Time.from_ISOtime("2024-06-03T23:02:30Z"),
+                status="ongoing",
             )
         ),
     )
     cache = ScheduleCache()
-    result, error = action.validate(cache)
+    result, _error = action.validate(cache)
 
     assert result
     action.apply()
