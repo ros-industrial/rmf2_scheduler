@@ -13,8 +13,6 @@
   <buildtool_depend>ament_cmake_python</buildtool_depend>
   <build_depend>libcurl-dev</build_depend>
   <build_depend>libboost-dev</build_depend>
-  <build_depend>libcroncpp-dev</build_depend>
-  <build_depend>taskflow</build_depend>
   <build_depend>pybind11-dev</build_depend>
   <build_depend>pybind11-json-dev</build_depend>
   <build_depend>nlohmann-json-dev</build_depend>
