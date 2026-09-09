@@ -1,4 +1,4 @@
-name: Build and test Python
+name: CI Python
 
 on:
   workflow_dispatch:
@@ -46,7 +46,6 @@ jobs:
             libcurl4-openssl-dev \
             libboost-dev \
             nlohmann-json3-dev \
-            libpybind11-dev \
             pybind11-json-dev
 
       - name: "Set up Python"
@@ -81,7 +80,6 @@ jobs:
             libcurl4-openssl-dev \
             libboost-dev \
             nlohmann-json3-dev \
-            libpybind11-dev \
             pybind11-json-dev
 
       - name: "Set up Python"
