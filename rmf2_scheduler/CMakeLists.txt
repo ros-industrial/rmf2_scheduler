@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.8)
-
 project(rmf2_scheduler VERSION 0.1.0)
 
 if(NOT CMAKE_CXX_STANDARD)
@@ -93,6 +92,7 @@ if(BUILD_PYTHON)
   add_subdirectory(python)
 endif()
 
+option(BUILD_TESTING "Build tests" ON)
 if(BUILD_TESTING)
   find_package(ament_cmake QUIET)
   if(ament_cmake_FOUND)
