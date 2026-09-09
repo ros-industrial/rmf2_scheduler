@@ -11,6 +11,7 @@ on:
 jobs:
   industrial_ci:
     strategy:
+      fail-fast: false
       matrix:
         env:
           # GCC Coverage Build
@@ -22,7 +23,7 @@ jobs:
           # Clang Build
           - ICI_JOB_NAME: clang
             ROS_DISTRO: humble
-            ADDITIONAL_DEBS: clang lld
+            ADDITIONAL_DEBS: clang lld libcurl4-openssl-dev
             CC: "clang"
             CXX: "clang++"
             TARGET_CMAKE_ARGS: "-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld -DCMAKE_MODULE_LINKER_FLAGS=-fuse-ld=lld -DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
@@ -37,6 +38,7 @@ jobs:
     env:
       ISOLATION: "shell"
       CCACHE_DIR: /github/home/.ccache
+      ADDITIONAL_DEBS: libcurl4-openssl-dev
     runs-on: ubuntu-latest
     container:
       image: ros:humble-ros-core

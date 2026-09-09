@@ -1,0 +1,8 @@
+{
+    "type": "cmake",
+    "name": "rmf2_scheduler",
+    "hooks": [
+      "share/rmf2_scheduler/hook/ament_prefix_path.dsv",
+      "share/rmf2_scheduler/hook/pythonpath.dsv"
+    ]
+}
