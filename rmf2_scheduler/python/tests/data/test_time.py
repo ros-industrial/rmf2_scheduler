@@ -41,7 +41,9 @@ def test_init():
 
 def test_init_datetime():
     # Seconds and nanoseconds
-    t_datetime = datetime(year=2024, month=6, day=3, hour=23, minute=2, second=30, tzinfo=timezone.utc)
+    t_datetime = datetime(
+        year=2024, month=6, day=3, hour=23, minute=2, second=30, tzinfo=timezone.utc
+    )
     t = Time(t_datetime)
     assert t.seconds() == t_datetime.timestamp()
 
