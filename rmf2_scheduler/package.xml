@@ -9,6 +9,7 @@
   <maintainer email="chenbn@artc.a-star.edu.sg">Chen Bainian</maintainer>
   <license>Apache License 2.0</license>
 
+  <buildtool_depend>git</buildtool_depend>
   <buildtool_depend>cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
   <build_depend>libcurl-dev</build_depend>
