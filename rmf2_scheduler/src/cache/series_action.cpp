@@ -245,6 +245,11 @@ void SeriesAction::_apply_series_add()
     assert(task_handler_->find(first_occ.id, task_itr));
     // Save shared_ptr before the loop: emplace() can rehash the map and invalidate iterators
     auto ref_task = task_itr->second;
+    assert(ref_task);
+    printf("REF TASK %d", ref_task);
+    printf("TASK_ITR->SECOND %d", task_itr->second);
+    
+    assert(task_itr->second);
     ref_task->series_id = series->id();
     task_changes.push_back({task_itr->first, "update"});
 
