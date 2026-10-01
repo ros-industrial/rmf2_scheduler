@@ -13,3 +13,6 @@
 # limitations under the License.
 
 from ._core import *
+from .log import register_python_logger
+
+register_python_logger()

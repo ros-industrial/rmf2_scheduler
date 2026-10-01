@@ -67,7 +67,7 @@ public:
 /**
  * \param[in] loghandler Pointer to the new object
  */
-void registerLogHandler(std::unique_ptr<LogHandler> loghandler);
+void registerLogHandler(const std::shared_ptr<LogHandler> & loghandler);
 
 /// Unregister current log handler, this will enable default log handler.
 void unregisterLogHandler();

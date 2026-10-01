@@ -24,6 +24,7 @@ pybind11_add_module(_core
   src/data/schedule_action.cpp
   src/data/schedule_change_record.cpp
   src/executor_data.cpp
+  src/log.cpp
   src/process_executor.cpp
   src/process_executor_taskflow.cpp
   src/py_utils.cpp

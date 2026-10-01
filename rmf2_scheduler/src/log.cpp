@@ -39,9 +39,9 @@ public:
     }
   }
 
-  void registerLogHandler(std::unique_ptr<LogHandler> loghandler)
+  void registerLogHandler(const std::shared_ptr<LogHandler> & loghandler)
   {
-    log_handler_ = std::move(loghandler);
+    log_handler_ = loghandler;
   }
 
   void unregisterLogHandler()
@@ -69,14 +69,14 @@ public:
   }
 
 private:
-  std::unique_ptr<LogHandler> log_handler_;
+  std::shared_ptr<LogHandler> log_handler_;
   LogLevel log_level_;
 };
 Logger g_logger;
 
-void registerLogHandler(std::unique_ptr<LogHandler> loghandler)
+void registerLogHandler(const std::shared_ptr<LogHandler> & loghandler)
 {
-  g_logger.registerLogHandler(std::move(loghandler));
+  g_logger.registerLogHandler(loghandler);
 }
 
 void unregisterLogHandler()
