@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 import logging as logging
+import rmf2_scheduler._core.log
 from rmf2_scheduler._core.log import LogLevel
 from rmf2_scheduler._core.log import get_log_level
 from rmf2_scheduler._core.log import log
@@ -11,7 +12,7 @@ from rmf2_scheduler._core.log import register_log_handler
 from rmf2_scheduler._core.log import set_log_level
 from rmf2_scheduler._core.log import unregister_log_handler
 __all__: list[str] = ['LogLevel', 'get_log_level', 'log', 'logging', 'register_log_handler', 'register_python_logger', 'set_log_level', 'unregister_log_handler']
-def _log_callback(file, line, loglevel, log):
+def _log_callback(file: str, line: int, loglevel: rmf2_scheduler._core.log.LogLevel, log: str) -> None:
     ...
 def register_python_logger() -> None:
     """
