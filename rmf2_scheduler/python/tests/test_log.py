@@ -30,7 +30,9 @@ def _restore_log_state():
 def test_register_log_handler_receives_message():
     received = []
     log.register_log_handler(
-        lambda file, line, loglevel, message: received.append((file, line, loglevel, message))
+        lambda file, line, loglevel, message: received.append(
+            (file, line, loglevel, message)
+        )
     )
     log.set_log_level(log.LogLevel.DEBUG)
 

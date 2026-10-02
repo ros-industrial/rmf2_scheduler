@@ -14,7 +14,7 @@
 
 import logging
 
-from ._core.log import *  # noqa: F403
+from ._core.log import *
 from ._core.log import LogLevel, register_log_handler
 
 _LOGGER = logging.getLogger(__name__)

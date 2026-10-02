@@ -19,5 +19,7 @@ from rmf2_scheduler._core import TaskflowProcessExecutor
 from rmf2_scheduler._core import cache
 from rmf2_scheduler._core import data
 from rmf2_scheduler._core import storage
+from rmf2_scheduler.log import register_python_logger
 from . import _core
-__all__: list[str] = ['Estimator', 'ExecutorData', 'LockedScheduleRO', 'LockedScheduleRW', 'Optimizer', 'ProcessExecutor', 'Scheduler', 'SchedulerOptions', 'SystemTimeAction', 'SystemTimeExecutor', 'TaskExecutor', 'TaskExecutorManager', 'TaskflowProcessExecutor', 'cache', 'data', 'storage']
+from . import log
+__all__: list[str] = ['Estimator', 'ExecutorData', 'LockedScheduleRO', 'LockedScheduleRW', 'Optimizer', 'ProcessExecutor', 'Scheduler', 'SchedulerOptions', 'SystemTimeAction', 'SystemTimeExecutor', 'TaskExecutor', 'TaskExecutorManager', 'TaskflowProcessExecutor', 'cache', 'data', 'log', 'register_python_logger', 'storage']
