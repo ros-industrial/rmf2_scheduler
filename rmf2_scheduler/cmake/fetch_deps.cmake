@@ -63,8 +63,8 @@ if(NOT Taskflow_FOUND)
       GIT_REPOSITORY https://github.com/taskflow/taskflow
       GIT_TAG 816b4ad53b44196c88f409eb7b4a25a0e3bfdf42  # v3.11.0
       PATCHES ${CMAKE_CURRENT_SOURCE_DIR}/cmake/taskflow.patch
-      OPTIONS 
-        "TF_BUILD_TESTS OFF" 
+      OPTIONS
+        "TF_BUILD_TESTS OFF"
         "TF_BUILD_EXAMPLES OFF"
       GIT_SHALLOW TRUE
       EXCLUDE_FROM_ALL YES

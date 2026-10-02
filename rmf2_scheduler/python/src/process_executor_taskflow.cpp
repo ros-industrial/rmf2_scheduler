@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <optional>
-
 #include <pybind11/stl.h>
+
+#include <optional>
 
 #include "rmf2_scheduler_py/process_executor_taskflow.hpp"
 #include "rmf2_scheduler/process_executor_taskflow.hpp"
@@ -38,7 +38,8 @@ void init_process_executor_taskflow_py(py::module & m)
       }
     ),
     py::arg("tem"),
-    py::arg("concurrency") = py::none(),
+    py::arg(
+      "concurrency") = py::none(),
     R"(
     :param tem: Task executor manager.
     :param concurrency: Maximum number of concurrent threads.

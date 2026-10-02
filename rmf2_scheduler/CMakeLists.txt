@@ -94,11 +94,30 @@ endif()
 
 option(BUILD_TESTING "Build tests" ON)
 if(BUILD_TESTING)
+  enable_testing()
+
   find_package(ament_cmake QUIET)
   if(ament_cmake_FOUND)
-    find_package(ament_lint_auto REQUIRED)
-    ament_lint_auto_find_test_dependencies()
+    # linters
+    find_package(ament_cmake_copyright REQUIRED)
+    find_package(ament_cmake_xmllint REQUIRED)
+    find_package(ament_cmake_lint_cmake REQUIRED)
+    find_package(ament_cmake_uncrustify REQUIRED)
+    find_package(ament_cmake_cpplint REQUIRED)
+
+    ament_copyright()
+    ament_xmllint()
+    ament_lint_cmake()
+    ament_uncrustify()
+    ament_cpplint()
+
+    # unit test dependencies
+    find_package(ament_cmake_gtest REQUIRED)
+    find_package(ament_cmake_gmock REQUIRED)
   endif()
+
+  include(cmake/rmf2_scheduler_add_gtest.cmake)
+  include(cmake/rmf2_scheduler_add_gmock.cmake)
 
   add_subdirectory(test)
 endif()
