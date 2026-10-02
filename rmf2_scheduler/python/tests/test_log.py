@@ -113,6 +113,7 @@ def test_python_log_handler_survives_interpreter_shutdown():
         [sys.executable, "-c", "import rmf2_scheduler"],
         capture_output=True,
         text=True,
+        check=False,
     )
 
     assert result.returncode == 0, result.stderr

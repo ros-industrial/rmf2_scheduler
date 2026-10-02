@@ -29,7 +29,7 @@ _LEVEL_TO_LOGGING = {
 }
 
 
-def _log_callback(file, line, loglevel, log):
+def _log_callback(file: str, line: int, loglevel: LogLevel, log: str) -> None:
     _LOGGER.log(_LEVEL_TO_LOGGING[loglevel], log)
 
 
