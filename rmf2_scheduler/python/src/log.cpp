@@ -59,6 +59,19 @@ private:
 namespace rmf2_scheduler_py
 {
 
+namespace
+{
+
+/// Unregister before interpreter shutdown: dropping the Python callback
+/// held by the Logger singleton after that crashes (GIL/thread state
+/// already gone). atexit runs while it's still valid.
+void reset_log_handler_at_exit()
+{
+  rmf2_scheduler::log::unregisterLogHandler();
+}
+
+}  // namespace
+
 void init_log_py(py::module & m)
 {
   using namespace rmf2_scheduler;  // NOLINT(build/namespaces)
@@ -116,6 +129,8 @@ void init_log_py(py::module & m)
     &getLogLevel,
     "Get current log level."
   );
+
+  py::module_::import("atexit").attr("register")(py::cpp_function(&reset_log_handler_at_exit));
 }
 
 }  // namespace rmf2_scheduler_py

@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import logging
+import subprocess
+import sys
 
 import pytest
 from rmf2_scheduler import log
@@ -100,3 +102,18 @@ def test_register_python_logger_drops_none_level(caplog):
         log.log("test_file.cpp", 1, log.LogLevel.NONE, "never emitted")
 
     assert caplog.records == []
+
+
+def test_python_log_handler_survives_interpreter_shutdown():
+    # Importing rmf2_scheduler registers a Python callback (register_python_logger)
+    # as the native log handler. Without unregistering it before interpreter
+    # shutdown, dropping that callback crashes the process (GIL/thread state
+    # already gone by then) -- this must run in a subprocess to observe that.
+    result = subprocess.run(
+        [sys.executable, "-c", "import rmf2_scheduler"],
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "Fatal Python error" not in result.stderr
