@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <pybind11/functional.h>
+
 #include <functional>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "rmf2_scheduler_py/log.hpp"
@@ -56,24 +59,6 @@ private:
 namespace rmf2_scheduler_py
 {
 
-namespace
-{
-
-/// A registered callback keeps a py::function alive inside the native
-/// Logger singleton (log.cpp). If that outlives interpreter shutdown,
-/// dropping it crashes with "GIL held but released": by the time
-/// Py_AtExit()'s C callbacks run, CPython has already deleted the current
-/// thread state, so Py_DECREF on it is too late despite what Py_AtExit's
-/// docs imply. Python's own `atexit` module runs earlier, while the thread
-/// state is still valid, so register through that instead (from C++, to
-/// keep this self-contained).
-void reset_log_handler_at_exit()
-{
-  rmf2_scheduler::log::unregisterLogHandler();
-}
-
-}  // namespace
-
 void init_log_py(py::module & m)
 {
   using namespace rmf2_scheduler;  // NOLINT(build/namespaces)
@@ -91,8 +76,19 @@ void init_log_py(py::module & m)
   ;
 
   m_log.def(
+    "log",
+    [](const std::string & file, int line, LogLevel loglevel, const std::string & message) {
+      rmf2_scheduler::log::log(file.c_str(), line, loglevel, "%s", message.c_str());
+    },
+    py::arg("file"),
+    py::arg("line"),
+    py::arg("loglevel"),
+    py::arg("message"),
+    "Emit a log message through the currently registered log handler."
+  );
+  m_log.def(
     "register_log_handler",
-    [](py::function callback) {
+    [](FunctionLogHandler::Callback callback) {
       registerLogHandler(
         std::make_unique<FunctionLogHandler>(
           [callback](const char * file, int line, LogLevel loglevel, const char * log) {
@@ -120,8 +116,6 @@ void init_log_py(py::module & m)
     &getLogLevel,
     "Get current log level."
   );
-
-  py::module_::import("atexit").attr("register")(py::cpp_function(&reset_log_handler_at_exit));
 }
 
 }  // namespace rmf2_scheduler_py
