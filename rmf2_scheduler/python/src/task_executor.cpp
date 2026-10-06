@@ -16,6 +16,7 @@
 #include <pybind11/chrono.h>
 
 #include "rmf2_scheduler_py/task_executor.hpp"
+#include "rmf2_scheduler_py/py_utils.hpp"
 #include "rmf2_scheduler/task_executor.hpp"
 #include "rmf2_scheduler/executor_data.hpp"
 
@@ -91,35 +92,7 @@ public:
     std::string & error
   ) override
   {
-    pybind11::gil_scoped_acquire gil;  // Acquire the GIL while in this scope.
-
-    // Try to look up the overridden method on the Python side.
-    pybind11::function override = pybind11::get_override(this, "start");
-
-    if (!override) {
-      error = "TaskExecutor start failed: cannot find defined Python function";
-      return false;
-    }
-
-    auto obj = override (id, data);
-    if (!py::isinstance<py::tuple>(obj)) {
-      error = "TaskExecutor start failed: Invalid Python return type.";
-      return false;
-    }
-
-    py::tuple tuple_obj = obj;
-    if (py::len(tuple_obj) != 2) {
-      error = "TaskExecutor start failed: Invalid number of returns";
-      return false;
-    }
-
-    bool result = tuple_obj[0].cast<bool>();
-    if (!result) {
-      error = tuple_obj[1].cast<std::string>();
-      return false;
-    }
-
-    return true;
+    RS_PYBIND11_OVERRIDE_PURE_WITH_BOOL_ERROR(TaskExecutor, start, id, data);
   }
 };
 

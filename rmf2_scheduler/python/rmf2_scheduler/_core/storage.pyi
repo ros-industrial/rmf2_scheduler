@@ -11,6 +11,11 @@ class ScheduleStream:
     """
     
         Stream for the schedule
+    
+        Subclassable from Python: override read_schedule/write_schedule/
+        refresh_tasks, each returning a (bool result, str error) tuple, to plug
+        in a custom backend (e.g. SQLAlchemy). Instances produced by the
+        create_default/create_simple factories use the same calling convention.
         
     """
     @staticmethod
@@ -19,7 +24,11 @@ class ScheduleStream:
     @staticmethod
     def create_simple(arg0: int, arg1: str) -> ScheduleStream:
         ...
+    def __init__(self) -> None:
+        ...
     def read_schedule(self, arg0: rmf2_scheduler._core.cache.ScheduleCache, arg1: rmf2_scheduler._core.data.TimeWindow) -> tuple:
+        ...
+    def refresh_tasks(self, arg0: rmf2_scheduler._core.cache.ScheduleCache, arg1: list[str]) -> tuple:
         ...
     @typing.overload
     def write_schedule(self, arg0: rmf2_scheduler._core.cache.ScheduleCache, arg1: rmf2_scheduler._core.data.TimeWindow) -> tuple:

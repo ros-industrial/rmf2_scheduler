@@ -1,4 +1,4 @@
-// Copyright 2025 ROS Industrial Consortium Asia Pacific
+// Copyright 2026 ROS Industrial Consortium Asia Pacific
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,63 @@
 
 #include <pybind11/stl.h>
 
+#include "rmf2_scheduler_py/py_utils.hpp"
 #include "rmf2_scheduler_py/storage/schedule_stream.hpp"
 #include "rmf2_scheduler/storage/schedule_stream.hpp"
+
+namespace rmf2_scheduler
+{
+
+namespace storage
+{
+
+class PyScheduleStream : public ScheduleStream
+{
+public:
+  using ScheduleStream::ScheduleStream;
+
+  /// Trampoline
+  bool read_schedule(
+    cache::ScheduleCache::Ptr cache,
+    const data::TimeWindow & time_window,
+    std::string & error
+  ) override
+  {
+    RS_PYBIND11_OVERRIDE_PURE_WITH_BOOL_ERROR(ScheduleStream, read_schedule, cache, time_window);
+  }
+
+  bool write_schedule(
+    cache::ScheduleCache::ConstPtr cache,
+    const data::TimeWindow & time_window,
+    std::string & error
+  ) override
+  {
+    RS_PYBIND11_OVERRIDE_PURE_WITH_BOOL_ERROR(ScheduleStream, write_schedule, cache, time_window);
+  }
+
+  bool write_schedule(
+    cache::ScheduleCache::ConstPtr cache,
+    const std::vector<data::ScheduleChangeRecord> & records,
+    std::string & error
+  ) override
+  {
+    RS_PYBIND11_OVERRIDE_PURE_WITH_BOOL_ERROR(ScheduleStream, write_schedule, cache, records);
+  }
+
+  bool refresh_tasks(
+    cache::ScheduleCache::Ptr cache,
+    const std::vector<std::string> & ids,
+    std::string & error
+  ) override
+  {
+    RS_PYBIND11_OVERRIDE_PURE_WITH_BOOL_ERROR(ScheduleStream, refresh_tasks, cache, ids);
+  }
+};
+
+}  // namespace storage
+
+}  // namespace rmf2_scheduler
+
 
 namespace rmf2_scheduler_py
 {
@@ -26,20 +81,28 @@ namespace storage
 void init_schedule_stream_py(py::module & m)
 {
   using namespace rmf2_scheduler;  // NOLINT(build/namespaces)
-  using namespace rmf2_scheduler::storage;  // NOLINT(build/namespaces)
+  using rmf2_scheduler::storage::ScheduleStream;
+  using rmf2_scheduler::storage::PyScheduleStream;
 
   py::module m_storage = m.def_submodule("storage");
 
   py::class_<
     ScheduleStream,
+    PyScheduleStream,
     ScheduleStream::Ptr
   >(
     m_storage,
     "ScheduleStream",
     R"(
     Stream for the schedule
+
+    Subclassable from Python: override read_schedule/write_schedule/
+    refresh_tasks, each returning a (bool result, str error) tuple, to plug
+    in a custom backend (e.g. SQLAlchemy). Instances produced by the
+    create_default/create_simple factories use the same calling convention.
     )"
   )
+  .def(py::init<>())
   .def(
     "read_schedule",
     [](
@@ -73,6 +136,18 @@ void init_schedule_stream_py(py::module & m)
     ) {
       std::string error;
       bool result = self.write_schedule(schedule_cache, records, error);
+      return py::make_tuple(result, error);
+    }
+  )
+  .def(
+    "refresh_tasks",
+    [](
+      ScheduleStream & self,
+      cache::ScheduleCache::Ptr schedule_cache,
+      const std::vector<std::string> & ids
+    ) {
+      std::string error;
+      bool result = self.refresh_tasks(schedule_cache, ids, error);
       return py::make_tuple(result, error);
     }
   )
