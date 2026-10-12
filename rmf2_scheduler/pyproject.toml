@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "rmf2_scheduler"
-version = "0.1.0"
+version = "0.3.0rc1"
 license = "Apache-2.0"
 description = "Python bindings for the RMF2 Scheduler"
 authors = [
