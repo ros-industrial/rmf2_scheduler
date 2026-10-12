@@ -34,6 +34,7 @@
 #include "rmf2_scheduler_py/data/time.hpp"
 #include "rmf2_scheduler_py/data/time_window.hpp"
 #include "rmf2_scheduler_py/executor_data.hpp"
+#include "rmf2_scheduler_py/log.hpp"
 #include "rmf2_scheduler_py/process_executor.hpp"
 #include "rmf2_scheduler_py/process_executor_taskflow.hpp"
 #include "rmf2_scheduler_py/scheduler.hpp"
@@ -71,6 +72,7 @@ PYBIND11_MODULE(_core, m)
   rmf2_scheduler_py::storage::init_schedule_stream_py(m);
 
   // ROOT
+  rmf2_scheduler_py::init_log_py(m);
   rmf2_scheduler_py::init_executor_data_py(m);
   rmf2_scheduler_py::init_task_executor_py(m);
   rmf2_scheduler_py::init_task_executor_manager_py(m);
