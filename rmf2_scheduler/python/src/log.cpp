@@ -67,12 +67,12 @@ void init_log_py(py::module & m)
   py::module m_log = m.def_submodule("log");
 
   py::enum_<LogLevel>(m_log, "LogLevel")
-    .value("DEBUG", LogLevel::DEBUG)
-    .value("INFO", LogLevel::INFO)
-    .value("WARN", LogLevel::WARN)
-    .value("ERROR", LogLevel::ERROR)
-    .value("FATAL", LogLevel::FATAL)
-    .value("NONE", LogLevel::NONE)
+  .value("DEBUG", LogLevel::DEBUG)
+  .value("INFO", LogLevel::INFO)
+  .value("WARN", LogLevel::WARN)
+  .value("ERROR", LogLevel::ERROR)
+  .value("FATAL", LogLevel::FATAL)
+  .value("NONE", LogLevel::NONE)
   ;
 
   m_log.def(
